@@ -1,26 +1,30 @@
 import { configureStore } from '@reduxjs/toolkit';
 import rootReducers from './rootReducers';
-import storage from 'redux-persist/lib/storage';
-import persistReducer from 'redux-persist/es/persistReducer';
-import thunk from 'redux-thunk';
+// import storage from 'redux-persist/lib/storage';
+// import persistReducer from 'redux-persist/es/persistReducer';
+// import thunk from 'redux-thunk';
 import persistStore from 'redux-persist/es/persistStore';
+import { useDispatch } from 'react-redux';
 
-const persistConfig = {
-    key: 'root',
-    storage,
-};
+// const persistConfig = {
+//     key: 'root',
+//     storage,
+// };
 
-const persistedReducer = persistReducer(persistConfig, rootReducers);
+// const persistedReducer = persistReducer(persistConfig, rootReducers);
 
 const store = configureStore({
     // cria loja
-    reducer: persistedReducer,
+    reducer: rootReducers,
+    // reducer: persistedReducer,
+
     devTools: process.env.NODE_ENV !== 'production', // ativa devTools se o env for diferente de produção
-    middleware: [thunk],
+    // middleware: [thunk],
 });
 
 export type AppDispatch = typeof store.dispatch;
-export const persistor = persistStore(store);
+export const useAppDispatch: () => AppDispatch = useDispatch;
+// export const persistor = persistStore(store);
 export default store;
 
 /* TODO: Algumas coisas podem estar diferente do mentor, mas funcionam do mesmo jeito
