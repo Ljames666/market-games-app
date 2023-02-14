@@ -1,4 +1,4 @@
-import { createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AppState } from './rootReducers';
 import axios from 'axios';
 
@@ -39,26 +39,57 @@ export const getAllGames = createAsyncThunk('allGames/get', async (_, { dispatch
 
     dispatch(setGameState(data));
 });
+type StateGames = {
+    data: IGames[];
+    dataSearch: IGames[];
+    game: IGames | null;
+};
 
-const gameAdapter = createEntityAdapter<IGames>({
-    selectId: (game) => game.id,
-    sortComparer: (a, b) => a.title.localeCompare(b.title),
-});
+// const gameAdapter = createEntityAdapter<IGames>({
+//     selectId: (game) => game.id,
+//     sortComparer: (a, b) => a.title.localeCompare(b.title),
+// });
 
-const initialState = gameAdapter.getInitialState();
+// const initialState = gameAdapter.getInitialState();
+const initialState: StateGames = {
+    data: [],
+    dataSearch: [],
+    game: null,
+};
 
 const gamesSlice = createSlice({
     name: 'gameList',
     initialState,
     reducers: {
-        setGameState: gameAdapter.setAll,
+        // setGameState: gameAdapter.setAll,
+        setGameState: (state, action) => {
+            state.data = action.payload;
+        },
+        setGameSearch: (
+            state,
+            action: {
+                payload: string;
+            }
+        ) => {
+            if (action.payload) {
+                const search = state.data.filter((s) => s.title.includes(action.payload));
+                state.dataSearch = search;
+            } else {
+                state.dataSearch = [];
+            }
+        },
+
+        selectGame: (state, action) => {
+            state.game = action.payload;
+        },
     },
 });
 
-export const { selectAll: gamesSelectAll, selectById } = gameAdapter.getSelectors(
-    (state: AppState) => state.gamesList
-);
+// export const { selectAll: gamesSelectAll, selectById } = gameAdapter.getSelectors(
+//     (state: AppState) => state.gamesList
+// );
+export const gamesSelectAll = (state: AppState) => state.gamesList;
 
-export const { setGameState } = gamesSlice.actions;
+export const { setGameState, selectGame, setGameSearch } = gamesSlice.actions;
 
 export default gamesSlice.reducer;
